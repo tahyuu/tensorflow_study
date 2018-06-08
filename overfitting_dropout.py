@@ -53,7 +53,7 @@ prediction = add_layer(l1,100,10,'l2',activation_function=tf.nn.softmax)
 
 #the loss between prediction and real data
 with tf.name_scope('loss'):
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys*tf.log(prediction),reduction_indices=[1]))
+    cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys*tf.log(tf.clip_by_value(prediction,1e-8,1.0)),reduction_indices=[1]))
     tf.summary.scalar('loss',cross_entropy)
 
 
@@ -78,12 +78,15 @@ sess.run(init)
 
 
 
-for i in range(500):
+for i in range(10000):
     sess.run(train_step,feed_dict={xs:X_train,ys:y_train,keep_prob:0.5})
+    #sess.run(train_step,feed_dict={xs:X_train,ys:y_train})
     if i%50==0:
-	pass
+	#pass
         #recorde loss
         train_result=sess.run(merged,feed_dict={xs:X_train,ys:y_train,keep_prob:1})
         test_result=sess.run(merged,feed_dict={xs:X_test,ys:y_test,keep_prob:1})
+        #train_result=sess.run(merged,feed_dict={xs:X_train,ys:y_train})
+        #test_result=sess.run(merged,feed_dict={xs:X_test,ys:y_test})
 	train_writer.add_summary(train_result,i)
 	test_writer.add_summary(test_result,i)
