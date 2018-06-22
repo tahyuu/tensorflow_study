@@ -80,13 +80,19 @@ cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys*tf.log(prediction),reduction_in
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
 
-sess = tf.Session()
-#import setp
-sess.run(tf.global_variables_initializer())
-
-
-for i in range(1000):
-    batch_xs, batch_ys = mnist.train.next_batch(100)
-    sess.run(train_step, feed_dict={xs:batch_xs,ys:batch_ys,keep_prob:0.5})
-    if i%50==0:
-        print (compute_accuracy(mnist.test.images[:1000],mnist.test.labels[:1000]))
+with tf.Session() as sess:
+    sess = tf.Session()
+    #import setp
+    sess.run(tf.global_variables_initializer())
+    
+    #tain data
+    for i in range(100):
+        batch_xs, batch_ys = mnist.train.next_batch(100)
+        sess.run(train_step, feed_dict={xs:batch_xs,ys:batch_ys,keep_prob:0.5})
+        if i%50==0:
+            print (compute_accuracy(mnist.test.images[:1000],mnist.test.labels[:1000]))
+    
+    #save train results
+    #saver = tf.train.Saver()
+    #save_path = saver.save(sess,'my_net/save_net.ckpt')
+    #print ("Save to path:",save_path)
